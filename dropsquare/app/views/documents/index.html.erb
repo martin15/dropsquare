@@ -1,0 +1,63 @@
+
+<div class="container" id="maincontent">
+  <p class="small" style="margin-bottom: 30px;">
+    <%= link_to "Back To Folder List", folders_path %>
+    &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+    <%= link_to "Add new document", new_document_path %>
+    &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+    <%= link_to "Download Selected Documents", "javascript:void(0)", 
+                :id => "submit_selected_documents_button" %>
+    &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+    <%= link_to "Download All Documents", download_all_documents_path(@folder.id) %>
+  </p>
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>&nbsp;</th>
+        <th>#</th>
+        <th colspan="2">FileName</th>
+        <th></th>
+        <th>&nbsp;</th>
+      </tr>
+    </thead>
+    <tbody>
+      <%= form_tag download_selected_documents_folder_path, :id => "submit_selected_documents" do %>
+        <% @documents.each_with_index do |document, x| %>
+          <tr>
+            <td class="doc_ids"><%= check_box_tag "doc_ids[]", document.id %></td>
+            <td><%= @no+x+1 %></td>
+            <% if %w{jpg png jpg gif bmp}.include?(document.file_name.file.extension.downcase) %>
+              <td><%= image_tag document.file_name.url(:thumb) %></td>
+              <td><%= document.file_name.file.filename %></td>
+            <% else %>
+              <td colspan="2">
+                <%= link_to document.file_name.file.filename, document.file_name.url, :target => "_blank" %>
+              </td>
+            <% end %>
+            <td>
+              <%= link_to "Edit", edit_document_path(:id => @folder.id, :document_id => document.id),
+                          :class => "btn btn-success" %>
+              <%= link_to "Delete", document_path(:id => @folder.id, :document_id => document.id), :method => :delete,
+                                    :data => {:confirm => "Are you sure?"}, :class => "btn btn-warning" %>
+            </td>
+          </tr>
+        <% end %>
+      <% end %>
+    </tbody>
+  </table>
+
+  <div class="col-xs-12 no_padding_lr pagination"><%= paginate @documents %></div>
+</div>
+
+<script>
+$(document).ready(function() {
+    $('a#submit_selected_documents_button').click(function(){
+      if($(":checkbox:checked").length > 0){
+        $("form#submit_selected_documents").submit();;
+      }else{
+        alert("Please choose at least one")
+      }
+    });
+  });
+
+</script>

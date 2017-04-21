@@ -1,0 +1,27 @@
+<% if @document.errors.any? %>
+  <div class="alert alert-danger alert-dismissable" group="alert">
+    <button type="button" class="close" data-dismiss="alert">
+      <span aria-hidden="true">&times;</span>
+      <span class="sr-only">Close</span>
+    </button>
+    <h4><%= pluralize(@document.errors.count, "error") %> prohibited this group from being saved:</h4>
+    <ul>
+    <% @document.errors.full_messages.each do |msg| %>
+      <li><%= msg %></li>
+    <% end %>
+    </ul>
+  </div>
+<% end %>
+
+
+  <div class="form-group">
+    <%= f.label :file_name, "File", :class => "col-sm-2 control-label" %>
+    <div class="col-sm-10">
+      <% if action_name == "edit" %>
+        <%= f.file_field :file_name, :class => "form-control" %>
+      <% else %>
+        <%= f.file_field :file_name, :class => "form-control",:multiple => true %>
+      <% end %>
+    </div>
+  </div>
+

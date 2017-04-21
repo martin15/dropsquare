@@ -1,0 +1,32 @@
+<% if @folder.errors.any? %>
+  <div class="alert alert-danger alert-dismissable" group="alert">
+    <button type="button" class="close" data-dismiss="alert">
+      <span aria-hidden="true">&times;</span>
+      <span class="sr-only">Close</span>
+    </button>
+    <h4><%= pluralize(@folder.errors.count, "error") %> prohibited this group from being saved:</h4>
+    <ul>
+    <% @folder.errors.full_messages.each do |msg| %>
+      <li><%= msg %></li>
+    <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<div class="form-group">
+  <%= f.label :name, "Folder Name", :class => "col-sm-2 control-label" %>
+  <div class="col-sm-10">
+    <%= f.text_field :name, :class => "form-control" %>
+  </div>
+</div>
+
+<div class="form-group">
+  <%= f.label :file_name, "Files", :class => "col-sm-2 control-label" %>
+  <div class="col-sm-10">
+    <% if action_name == "edit" %>
+      Please follow this <%= link_to "link", documents_path(@folder.id) %> to manage your documents
+    <% else %>
+      <%= f.file_field :file_name, :class => "form-control",:multiple => true %>
+    <% end %>
+  </div>
+</div>
