@@ -1,6 +1,22 @@
 Rails.application.routes.draw do
   devise_for :users
 
+  namespace :api, :defaults => {:format => 'json'} do
+    devise_for :users
+    resources :api_folders do
+      collection do
+        get "download_all_documents"
+      end
+    end
+    resources :api_documents do
+      collection do
+        get "download_file"
+        get "download_files"
+      end
+
+    end
+  end
+
   get "folders/:id/download_all_documents" => "folders#download_all_documents",
       :as => "download_all_documents"
   post "folders/download_selected_folders" => "folders#download_selected_folders",
@@ -11,6 +27,8 @@ Rails.application.routes.draw do
       post "download_selected_documents" => "documents#download_selected_documents"
     end
   end
+  get "api/user_folder_list_api"
+  post "api/save_document_api"
 
   root 'home#index'
   # The priority is based upon order of creation: first created -> highest priority.
