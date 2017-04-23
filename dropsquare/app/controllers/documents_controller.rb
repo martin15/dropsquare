@@ -53,8 +53,12 @@ class DocumentsController < ApplicationController
     temp_file = Tempfile.new(filename)
 
     Zip::File.open(temp_file.path, Zip::File::CREATE) do |zipfile|
+      @old_name = ""
+      i = 0
       documents.each do |document|
-        zipfile.add(document.file_name.file.filename, "#{Rails.root.join('public')}#{document.file_name.url}")
+        new_name = @old_name == document.file_name.file.filename ? (i+=1;"#{i}##{@old_name}") : document.file_name.file.filename
+        @old_name = document.file_name.file.filename
+        zipfile.add(new_name, "#{Rails.root.join('public')}#{document.file_name.url}")
       end
     end
     zip_data = File.read(temp_file.path)

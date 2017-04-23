@@ -1,5 +1,5 @@
 class FoldersController < ApplicationController
-  before_filter :find_folder, :only => [:edit, :update, :destroy, :delete, :download_all_documents]
+  before_filter :find_folder, :only => [:edit, :update, :destroy, :download_all_documents]
 
   def index
     @folders = current_user.folders.includes(:documents).order("#{sort_column} #{sort_direction}").
@@ -50,14 +50,19 @@ class FoldersController < ApplicationController
     documents = @folder.documents
 
     filename = "archive_#{Time.now.to_s(:db)}.zip"
-    temp_file = Tempfile.new(filename)
+    temp_file = Tempfile.new(filename, "#{Rails.root.join('tmp/archive')}")
 
     Zip::File.open(temp_file.path, Zip::File::CREATE) do |zipfile|
+      @old_name = ""
+      i = 0
       documents.each do |document|
-        zipfile.add(document.file_name.file.filename, "#{Rails.root.join('public')}#{document.file_name.url}")
+        new_name = @old_name == document.file_name.file.filename ? (i+=1;"#{i}##{@old_name}") : document.file_name.file.filename
+        @old_name = document.file_name.file.filename
+        zipfile.add(new_name, "#{Rails.root.join('public')}#{document.file_name.url}")
       end
     end
     zip_data = File.read(temp_file.path)
+    puts temp_file.path.inspect
     send_data(zip_data, :type => 'application/zip', :filename => filename)
   end
 
@@ -69,8 +74,12 @@ class FoldersController < ApplicationController
 
     Zip::File.open(temp_file.path, Zip::File::CREATE) do |zipfile|
       folders.each do |folder|
+        @old_name = ""
+        i = 0
         folder.documents.each do |document|
-          zipfile.add("#{folder.name}/#{document.file_name.file.filename}",
+          new_name = @old_name == document.file_name.file.filename ? (i+=1;"#{i}##{@old_name}") : document.file_name.file.filename
+          @old_name = document.file_name.file.filename
+          zipfile.add("#{folder.name}/#{new_name}",
                       "#{Rails.root.join('public')}#{document.file_name.url}")
         end
       end

@@ -26,7 +26,7 @@
           <tr>
             <td class="doc_ids"><%= check_box_tag "doc_ids[]", document.id %></td>
             <td><%= @no+x+1 %></td>
-            <% if %w{jpg png jpg gif bmp}.include?(document.file_name.file.extension.downcase) %>
+            <% if %w{jpg png jpeg gif bmp}.include?(document.file_name.file.extension.downcase) %>
               <td><%= image_tag document.file_name.url(:thumb) %></td>
               <td><%= document.file_name.file.filename %></td>
             <% else %>
